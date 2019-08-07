@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Page Title</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Style the body */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+}
+
+/* Header/logo Title */
+.header {
+  /*<!-- how to change the size of the area -->*/
+  padding: 80px;
+  text-align: center;
+  background: #1abc9c;
+  color: white;
+}
+
+/* Increase the font size of the heading */
+.header h1 {
+  font-size: 40px;
+}
+
+/* Style the top navigation bar */
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+
+/* Style the navigation bar links */
+.navbar a {
+  float: left;
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 20px;
+  text-decoration: none;
+}
+
+/* Right-aligned link */
+.navbar a.right {
+  float: right;
+}
+
+/* Change color on hover */
+.navbar a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Column container */
+.row {
+  display: -ms-flexbox; /* IE10 */
+  display: flex;
+  -ms-flex-wrap: wrap; /* IE10 */
+  flex-wrap: wrap;
+}
+
+/* Create two unequal columns that sits next to each other */
+/* Sidebar/left column */
+.side {
+  -ms-flex: 30%; /* IE10 */
+  flex: 30%;
+  background-color: #f1f1f1;
+  padding: 20px;
+}
+
+/* Main column */
+.main {
+  -ms-flex: 70%; /* IE10 */
+  flex: 70%;
+  background-color: white;
+  padding: 20px;
+}
+
+/* Fake image, just for this example */
+.fakeimg {
+  background-color: #aaa;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Footer */
+.footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+}
+
+/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 700px) {
+  .row {
+    flex-direction: column;
+  }
+}
+
+/* Responsive layout - when the screen is less than 400px wide, make the navigation links stack on top of each other instead of next to each other */
+@media screen and (max-width: 400px) {
+  .navbar a {
+    float: none;
+    width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>FSchat</h1>
+  <p>Danny Reidenbach</p>
+</div>
+<!-- This is a comment  -->
+<div class="navbar">
+  <button style="font-size : 20px;height:50px;width:100px" type="button" onclick="showSignIn()">Sign Up</button>
+  <!-- <div class="divider"></div> -->
+  <button style="font-size : 20px;height:50px;width:100px" type="button" onclick="alert('Hello world!')">Log In</button>
+
+  <button style="font-size : 20px;height:50px;width:100px;float: right" type="button" onclick="alert('Hello world!')">About Us</button>
+  <!-- <a href="#" class="right">Link</a> -->
+</div>
+
+
+
+
+
+
+
+
+<div id="welcomeDiv"  style="display:none;" class="answer_list" >
+  <script>
+  function showSignIn() {
+     document.getElementById('welcomeDiv').style.display = "block";
+  }
+  function signInn() {
+    console.log(email);
+    firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // [START_EXCLUDE]
+        if (errorCode == 'auth/weak-password') {
+          alert('The password is too weak.');
+        } else {
+          alert(errorMessage);
+        }
+        console.log(error);
+        // [END_EXCLUDE]
+      });
+  }
+  </script>
+  <form action="signInn()" method="post">
+      First name:<br>
+      <input size="35" type="text" name="firstname" placeholder="Mickey">
+      <br>
+      Last name:<br>
+      <input size="35" type="text" name="lastname" placeholder="Mouse">
+      <br>
+      Email:<br>
+      <input size="35" type="text" name="email" placeholder="Mickey.Mouse@berkeley.edu">
+      <br>
+      Password:<br>
+      <input size="35" type="text" name="password" placeholder="********">
+      <br>
+      Confirm Password:<br>
+      <input size="35" type="text" name="confirmPassword" placeholder="********">
+      <br>
+      <br>
+      <input type="submit" value="Submit">
+      <!-- <button style="font-size : 20px" type="submit">Submit</button> -->
+</form>
+
+</div>
+
+<!-- <div class="row">
+  <div class="side">
+    <h2>About Me</h2>
+    <h5>Photo of me:</h5>
+    <div class="fakeimg" style="height:200px;">Image</div>
+    <p>Some text about me in culpa qui officia deserunt mollit anim..</p>
+    <h3>More Text</h3>
+    <div class="fakeimg" style="height:60px;">Image</div><br>
+    <div class="fakeimg" style="height:60px;">Image</div><br>
+    <div class="fakeimg" style="height:60px;">Image</div>
+  </div>
+  <div class="main">
+    <h2>TITLE HEADING</h2>
+    <h5>Title description, Aug 5, 2019</h5>
+    <div class="fakeimg" style="height:200px;">Image</div>
+    <p>Some text..</p>
+    <br>
+    <h2>TITLE HEADING</h2>
+    <h5>Title description, Sep 2, 2017</h5>
+    <div class="fakeimg" style="height:200px;">Image</div>
+    <p>Some text..</p>
+  </div>
+</div>
+
+<div class="footer">
+  <h2>Footer</h2>
+</div> -->
+
+
+<!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAaD27nam6wmU3s1guPhDK5BhPqLd-oScw",
+    authDomain: "fschat-e96d5.firebaseapp.com",
+    databaseURL: "https://fschat-e96d5.firebaseio.com",
+    projectId: "fschat-e96d5",
+    storageBucket: "",
+    messagingSenderId: "530178583093",
+    appId: "1:530178583093:web:87129844a9e505e7"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+<script src="/__/firebase/6.3.4/firebase-app.js"></script>
+
+<!-- Add Firebase products that you want to use -->
+<script src="/__/firebase/6.3.4/firebase-auth.js"></script>
+<script src="/__/firebase/6.3.4/firebase-firestore.js"></script>
+
+<script src="/__/firebase/init.js"></script>
+
+</body>
+</html>
