@@ -1,0 +1,26 @@
+<html>
+<head>
+  <title>FSchat</title>
+  <link rel="stylesheet" href="signUpStyleData.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Nunito:400,600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="main-div">
+  <h2>FSchat</h2>
+  <form action="/login" method="post">
+    <input name="firstName" type="firstName" placeholder="First Name..." id="fname_field"/>
+    <input name="lastName" type="lastName" placeholder="Last Name..." id="lname_field"/>
+    <input name="email" type="email" placeholder="Email..." id="email_field"/>
+    <input name="password" type="password" placeholder="Password..." id="password_field"/>
+    <input name="confPassword" type="password" placeholder="Confirm Password..." id="conf_password_field"/>
+      <input type="submit" value="Sign Up">
+  </form>
+</div>
+<div class="errorEmail">
+  <h3>{{.}}</h3>
+</div>
+
+
+</body>
+</html>
