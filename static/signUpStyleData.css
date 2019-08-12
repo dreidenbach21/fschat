@@ -24,6 +24,7 @@ input: button {
 
 .main-div h2 {
   transform: translateX(60px);
+  font-size: 40px;
 
 }
 
@@ -37,6 +38,8 @@ input: button {
     transform: translateX(30px);
     color: red;
     /* display: none; */
+
+  /* Find a way to create a boundry on left and right so the text looks nice and ionst a long stringy sentence */
 }
 
 .main-div input {
