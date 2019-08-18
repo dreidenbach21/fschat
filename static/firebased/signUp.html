@@ -1,0 +1,63 @@
+<html>
+<head>
+  <title>FSchat</title>
+  <link rel="stylesheet" href="signUpStyle.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Nunito:400,600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="main-div">
+  <h2>FSchat</h2>
+  <!--I cannot get it interms of a form so that go can take the info  -->
+  <form>
+  <input name="email" type="email" placeholder="Email..." id="email_field"/>
+  <input name="password" type="password" placeholder="Password..." id="password_field"/>
+  </form>
+  <div class="container">
+    <button id="signUp" onclick="signUp()">Sign Up</button>
+    <button id="login" onclick="signUp()">Log In</button>
+  </div>
+
+
+</div>
+
+
+
+<script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js"></script>
+  <!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-firestore.js"></script>
+
+
+<!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+
+
+
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAaD27nam6wmU3s1guPhDK5BhPqLd-oScw",
+    authDomain: "fschat-e96d5.firebaseapp.com",
+    databaseURL: "https://fschat-e96d5.firebaseio.com",
+    projectId: "fschat-e96d5",
+    storageBucket: "",
+    messagingSenderId: "530178583093",
+    appId: "1:530178583093:web:87129844a9e505e7"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+<!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+
+  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+
+
+<script src="signUp.js"></script>
+</body>
+</html>

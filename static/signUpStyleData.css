@@ -5,12 +5,13 @@ body{
   margin: 0px;
   font-family: 'Nunito', sans-serif;
   /* font-size: 40px; */
+  transform: translateY(-60px);
 }
 
-input: button {
+/* input: button {
   font-family: 'Nunito', sans-serif;
 
-}
+} */
 
 .main-div {
   width: 10%;
@@ -19,15 +20,24 @@ input: button {
   padding: 20px;
   transform: translateX(-50px);
 
-
 }
 
 .main-div h2 {
   transform: translateX(60px);
-  font-size: 40px;
+  font-size: 60px;
 
 }
 
+.main-div input[type=submit] {
+  background: #5d8ffc;
+  color: #fff;
+  border: 1px solid #5d8ffc;
+}
+.main-div input[type=submit]:hover {
+  background: #fff;
+  color: #5d8ffc;
+  border: 1px solid #5d8ffc;
+}
 /* .container {
   display: inline-block;
   text-align: center;
@@ -51,13 +61,27 @@ input: button {
   outline: none;
   width: 200%;
   margin-bottom: 20px;
+
+  font-size: 20px;
 }
 
 .main-div input:focus {
   border: 1px solid #777;
 }
 
-.main-div button {
+
+
+.errorEmail button {
+  border: none;
+  background-color: inherit;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-block;
+  color: #0059e8;
+}
+
+/* .main-div button {
   background: #5d8ffc;
   color: #fff;
   border: 1px solid #5d8ffc;
@@ -76,4 +100,4 @@ input: button {
   color: #5d8ffc;
   border: 1px solid #5d8ffc;
 
-}
+} */
