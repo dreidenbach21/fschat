@@ -1,0 +1,30 @@
+<html>
+<head>
+  <title>Welcome</title>
+  <link rel="stylesheet" href="signUpStyleData.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Nunito:400,600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="main-div">
+  <h2>Welcome</h2>
+  <form action="/login" method="post">
+    <input name="email" type="email" placeholder="Email..." id="email_field"/>
+    <input name="password" type="password" placeholder="Password..." id="password_field"/>
+      <input type="submit" value="Log In">
+  </form>
+</div>
+<div class="errorEmail">
+  <h3>{{.ErrorMess}}</h3>
+  <br>
+  </br>
+  <br>
+  </br>
+  <form action="/switchtosign" method="post">
+    <button class="btn-signup">If you do not have an account please click here to Sign Up!</button>
+  </form>
+</div>
+
+
+</body>
+</html>

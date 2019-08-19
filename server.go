@@ -21,6 +21,8 @@ import (
 	//"github.com/gorilla/mux"
 
 	"github.com/gorilla/securecookie"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 // User : the user
@@ -36,66 +38,60 @@ type ErrorMessage struct {
 	ErrorMess string
 }
 
+// Claims : the body that will hold the data for the JWT
+type Claims struct {
+	Email string //`json:"email"`
+	jwt.StandardClaims
+}
+
 // global variables
 var mapp map[string]User
 var collection *mongo.Collection
 
-// var cookieHandler = securecookie.New(
-//     securecookie.GenerateRandomKey(32),
-//     securecookie.GenerateRandomKey(16))
+var hashKey = []byte("very-secretvery-secret")
+var blockKey = []byte("abcdefghijklmnop")
+var s = securecookie.New(hashKey, blockKey)
 
-//var cookieHandler = securecookie.New([]byte("asdaskdhasdhgsajdgasdsadksakdhasidoajsdousahdopj"),[]byte("asdaskdhasdhgsaj"))
+// encoding and decoding cookies works
 
-//
-// var hashKey = []byte("aaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-// //var blockKey = []byte("a-lot-secreta-lot-secret")
-// var cookieHandler = securecookie.New(hashKey, nil)
-
-var hashKey = []byte("very-secret")
-var s = securecookie.New(hashKey, nil)
+var jwtKey = []byte("my_secret_key") //this is for the JWT
 
 // SetCookieHandler : sets cookies
-func SetCookieHandler(w http.ResponseWriter, r *http.Request) {
-	encoded, err := s.Encode("cookie-name", "cookie-value")
+func SetCookieHandler(w http.ResponseWriter, r *http.Request, val string) {
+	encoded, err := s.Encode("cookie-name", val)
 	if err == nil {
 		cookie := &http.Cookie{
 			Name:  "cookie-name",
-			Value: encoded,
+			Value: encoded, // see first line for what is to be enconded
 			Path:  "/",
 		}
 		http.SetCookie(w, cookie)
 		fmt.Println(cookie.Value)
+		fmt.Println("cookie value above set")
+	} else {
+		fmt.Println("Error: ")
+		fmt.Println(err)
 	}
 }
 
 //You could then read this cookie by using the same SecureCookie object in another handler.
 
 // ReadCookieHandler : reads cookies
-func ReadCookieHandler(w http.ResponseWriter, r *http.Request) {
+func ReadCookieHandler(w http.ResponseWriter, r *http.Request) string {
 	if cookie, err := r.Cookie("cookie-name"); err == nil {
 		var value string
 		if err = s.Decode("cookie-name", cookie.Value, &value); err == nil {
 			fmt.Println(value)
+			fmt.Println("cookie value above read")
+			return value
 		}
+	} else {
+		fmt.Println("Error!!!!!!!!!!!!!")
+		fmt.Println(err)
 	}
+	return ""
 }
 
-//   // Cookie
-//   func SetCookie(uemail string, response http.ResponseWriter) {
-//     value := map[string]string{
-//         "email": uemail,
-//     }
-//     if encoded, err := cookieHandler.Encode("cookie", value); err == nil {
-//         cookie := &http.Cookie{
-//             Name:  "cookie",
-//             Value: encoded,
-//             Path:  "/",
-//         }
-//         http.SetCookie(response, cookie)
-//         fmt.Println(cookie.Value)
-//     }
-// }
-//
 //
 // func ClearCookie(response http.ResponseWriter) {
 //     cookie := &http.Cookie{
@@ -107,19 +103,6 @@ func ReadCookieHandler(w http.ResponseWriter, r *http.Request) {
 //     http.SetCookie(response, cookie)
 // }
 //
-// func ReadCookie(request *http.Request) (userName string) {
-//     if cookie, err := request.Cookie("cookie"); err == nil {
-//         cookieValue := make(map[string]string)
-//         if err = cookieHandler.Decode("cookie", cookie.Value, &cookieValue); err == nil {
-//             userName = cookieValue["email"]
-//             fmt.Println("retreived the email for the cookie")
-//         } else {
-//               fmt.Println("Error: ")
-//               fmt.Println(err)
-//         }
-//     }
-//     return userName
-// }
 
 func verifyPassword(password string) string {
 	var uppercasePresent bool
@@ -224,7 +207,6 @@ func dealBadInfo(uemail string, upass string, cpass string, w http.ResponseWrite
 	return false
 }
 
-// ADD COOKIE SUPPORT TO SIGN UP
 func signup(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("signup function")
 	//mess := ErrorMessage{"testing 123 now"}
@@ -250,6 +232,8 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		var result User
 
 		eror := collection.FindOne(context.TODO(), filter).Decode(&result)
+		//decode takes the found data point and puts it into value
+
 		if eror == nil { // therefore it did find an email on file
 			//log.Fatal(eror)
 			mess := ErrorMessage{"There is already an account registered to this email "}
@@ -281,12 +265,6 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("password:", r.Form["password"])
 		fmt.Println("salted password:", salt)
 
-		// for k, v := range mapp {
-		//     fmt.Println("k:", k, "v:", v)
-		//   }
-		//
-		// mapp[uemail] = User{firster,laster,uemail,upass}
-
 		ash := User{firster, laster, uemail, salt} // only storing salted password
 		insertResult, err := collection.InsertOne(context.TODO(), ash)
 		fmt.Println(ash)
@@ -295,6 +273,24 @@ func signup(w http.ResponseWriter, r *http.Request) {
 		}
 
 		fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+
+		expirationTime := time.Now().Add(5 * time.Minute)
+		claims := &Claims{
+			Email: uemail,
+			StandardClaims: jwt.StandardClaims{
+				// In JWT, the expiry time is expressed as unix milliseconds
+				ExpiresAt: expirationTime.Unix(),
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+		tokenString, err := token.SignedString(jwtKey)
+		if err != nil {
+			// If there is an error in creating the JWT return an internal server error
+			fmt.Println("Error with JWT token!")
+			return
+		}
+		SetCookieHandler(w, r, tokenString)
 
 		mess := ErrorMessage{"Sign Up Successful"}
 		t.Execute(w, mess)
@@ -316,6 +312,46 @@ func comparePasswords(hashedPwd string, plainPwd string) bool {
 	return true
 }
 
+// Welcome : handling the home page
+func welcome(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(" welcome method:", r.Method)
+	if r.Method == "GET" {
+		// Get the JWT string from the cookie
+		tknStr := ReadCookieHandler(w, r)
+
+		fmt.Println("Token String: ", tknStr)
+
+		// Initialize a new instance of `Claims`
+		claims := &Claims{}
+
+		// Parse the JWT string and store the result in `claims`.
+		// Note that we are passing the key in this method as well. This method will return an error
+		// if the token is invalid (if it has expired according to the expiry time we set on sign in),
+		// or if the signature does not match
+		tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+		if err != nil {
+			fmt.Println("Error in the Welcome opening of the JWT")
+			fmt.Println(err)
+			switchtolog(w, r)
+			return
+		}
+		if !tkn.Valid {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			fmt.Println("Redirecting to Log in since token expired")
+			switchtolog(w, r)
+			return
+		}
+
+		t, _ := template.ParseFiles("static/welcome.html")
+		// fmt.Println("about to refresh")
+		// refreshJWT(w, r)
+		fmt.Println("Welcome!")
+		t.Execute(w, nil)
+	}
+
+}
 func login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("login function")
 	fmt.Println("method:", r.Method) //get request method
@@ -342,7 +378,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 		eror := collection.FindOne(context.TODO(), filter).Decode(&result)
 		if eror != nil {
-			//log.Fatal(eror)
+			//there is no account with the given email
 			mess := ErrorMessage{"There is no account registered to that email please Sign Up"}
 			fmt.Println("Log Failed: attempting to sign up.....")
 			t, _ := template.ParseFiles("static/signupdatabase.html")
@@ -351,19 +387,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		fmt.Printf("Found a single document: %+v\n", result)
-
-		// var ok = dealBadInfo(uemail,upass,upass,w,"static/logindatabase.html")
-		// if(ok){
-		//   // mess := ErrorMessage{"Invalid Password Please Try Again"}
-		//   // t.Execute(w,mess)
-		//   fmt.Println("issue with log in details")
-		//   return
-		// }
-
 		fmt.Println("email:", r.Form["email"])
 		fmt.Println("password:", r.Form["password"])
 
-		salted := result.Password
+		salted := result.Password //  decoded in the compare function
 
 		if !comparePasswords(salted, upass) {
 			mess := ErrorMessage{"Error: Password does not match"}
@@ -373,20 +400,33 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println("loging in.....")
 
-		//SetCookie(uemail, w) // use of cookies
-		SetCookieHandler(w, r)
-		// namer := ReadCookie(r)
-		//
-		// fmt.Println(namer)
+		expirationTime := time.Now().Add(5 * time.Minute)
+		claims := &Claims{
+			Email: uemail,
+			StandardClaims: jwt.StandardClaims{
+				// In JWT, the expiry time is expressed as unix milliseconds
+				ExpiresAt: expirationTime.Unix(),
+			},
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-		ReadCookieHandler(w, r)
+		tokenString, err := token.SignedString(jwtKey)
+		if err != nil {
+			// If there is an error in creating the JWT return an internal server error
+			fmt.Println("Error with JWT token!")
+			return
+		}
+		SetCookieHandler(w, r, tokenString)
 
+		cooks := ReadCookieHandler(w, r)
+
+		fmt.Println(cooks)
 		fmt.Println("completed cookie check in")
+		// mess := ErrorMessage{"cookie has been confirmed"}
+		// t, _ = template.ParseFiles("static/welcome.html")
+		// t.Execute(w, mess)
 
-		// mapp[uemail] = User{firster,laster,uemail,upass}
-		mess := ErrorMessage{"cookie has been confirmed"}
-		t.Execute(w, mess)
-		//this sends the webpage back to the sign up page after the log in is complete
+		http.Redirect(w, r, "/welcome", http.StatusSeeOther)
 	}
 }
 func switchtosign(w http.ResponseWriter, r *http.Request) {
@@ -401,6 +441,49 @@ func switchtolog(w http.ResponseWriter, r *http.Request) {
 	// t.Execute(w, nil)
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
+// refreshJWT : refresh the expiration time of the JWT token
+func refreshJWT(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Refreshing...")
+	tknStr := ReadCookieHandler(w, r)
+	claims := &Claims{}
+	tkn, err := jwt.ParseWithClaims(tknStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if !tkn.Valid {
+		fmt.Println("JWT is not valid")
+		return
+	}
+	if err != nil {
+		fmt.Println("Error: ")
+		fmt.Println(err)
+		return
+	}
+
+	// We ensure that a new token is not issued until enough time has elapsed
+	// In this case, a new token will only be issued if the old token is within
+	// 30 seconds of expiry. Otherwise, return a bad request status
+	if time.Unix(claims.ExpiresAt, 0).Sub(time.Now()) > 30*time.Second {
+		fmt.Println("Still got Time brother")
+		return
+	}
+
+	// Now, create a new token for the current use, with a renewed expiration time
+	expirationTime := time.Now().Add(5 * time.Minute)
+	fmt.Println("the new exp time: ")
+	fmt.Println(expirationTime)
+	claims.ExpiresAt = expirationTime.Unix()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// Set the new token as the users `token` cookie
+	SetCookieHandler(w, r, tokenString)
+	fmt.Println("Refreshed")
 }
 
 func mongose() *mongo.Client {
@@ -439,8 +522,11 @@ func main() {
 	http.Handle("/", fs)
 	http.HandleFunc("/signup", signup)
 	http.HandleFunc("/login", login)
+	http.HandleFunc("/refresh", refreshJWT)
+	http.HandleFunc("/welcome", welcome)
 
 	// using a MUX to get 2 /log and /sign
+	// these never will appear jsut use to re route
 	http.HandleFunc("/switchtosign", switchtosign)
 	http.HandleFunc("/switchtolog", switchtolog)
 
