@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Chat Room</title>
+
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/emojione/2.2.6/assets/css/emojione.min.css"/> -->
+<style>
+body {
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+        /* background: #b3ffff; */
+    }
+    
+    main {
+        flex: 1 0 auto;
+        background: #89ecec;
+    }
+     header {
+        background: #89ecec;
+        font-size: 60px;
+        text-align: right;
+     }
+     .textfield
+      {
+        width: 50%;
+        padding: 12px 20px;
+        
+     }
+     .senderbtn {
+        background: #257474;
+        border: none;
+        color: white;
+        padding: 12px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 12px;
+     }
+     .senderbtn:hover {
+        color: #257474;
+        background: (0,0,0);
+        
+     }
+    #chat-messages {
+        min-height: 10vh;
+        height: 60vh;
+        width: 100%;
+        overflow-y: scroll;
+        background: #f3ffff;
+    }
+    </style>
+</head>
+<body>
+<header>
+    <nav>
+        <div class="nav-wrapper">
+            <a class="brand-logo right">FSchat</a>
+        </div>
+    </nav>
+</header>
+<main id="app">
+    <div class="row">
+        <div class="col s12">
+            <div class="card horizontal">
+                <div id="chat-messages" class="card-content">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="textfield">
+            <input class = "textfield" type="text" id="newMsg" placeholder="Message...">
+        <!-- </div>
+        <div class="send"> -->
+            <button class="senderbtn" onclick="Send()">
+                Send
+            </button>
+        </div>
+    </div>
+</main>
+<footer class="page-footer">
+</footer>
+
+<script>
+    var chatContent = "";
+    var ws = new WebSocket('ws://' + window.location.host + '/ws');
+    ws.addEventListener('message', function(e) {
+            var msg = JSON.parse(e.data);
+            console.log(msg.message)
+            addRow(msg.message)
+            var element = document.getElementById("chat-messages")
+            element.scrollTop = element.scrollHeight;
+    });
+
+    function waitForSocketConnection(socket, callback){
+        setTimeout(
+            function(){
+                if (socket.readyState === 1) {
+                    if(callback !== undefined){
+                        callback();
+                    }
+                    return;
+                } else {
+                    waitForSocketConnection(socket,callback);
+                }
+            }, 5);
+    };
+    
+    function addRow(val) {
+        const div = document.createElement('div');
+
+        div.className = 'row';
+
+        div.innerHTML = `<input type="text" name="message" value="` + val + `"  /> <br/>`;
+
+        document.getElementById('chat-messages').appendChild(div);
+      
+}
+    function Send() {
+        
+        var msg = document.getElementById("newMsg").value;
+
+          
+        console.log(chatContent)
+        // document.getElementById("chat-messages").scrollTop = document.getElementById("chat-messages").scrollHeight; 
+        if (msg != '') {
+
+               waitForSocketConnection(ws, function() {ws.send(
+                    JSON.stringify({
+                        message: document.getElementById("newMsg").value
+                    }
+                ))
+               });
+                msg = ''; // Reset newMsg
+                
+            }
+}
+
+
+</script>
+
+</body>
+</html>

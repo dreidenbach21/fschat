@@ -1,30 +1,103 @@
 <html>
 <head>
-  <title>Welcome</title>
-  <link rel="stylesheet" href="signUpStyleData.css"/>
+  <title>Welcome Page</title>
+  <link rel="stylesheet" href="welcomeStyle.css"/>
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,600&display=swap" rel="stylesheet">
+
+  <script>
+        var chatContent = "";
+        var ws = new WebSocket('ws://' + window.location.host + '/ws');
+        ws.addEventListener('message', function(e) {
+                var msg = JSON.parse(e.data);
+                console.log(msg.message)
+                addRow(msg.message)
+                var element = document.getElementById("chat-messages")
+                element.scrollTop = element.scrollHeight;
+                document.getElementById("newMsg").value = "";
+                // this clears the chat text line after sent
+        });
+    
+        function waitForSocketConnection(socket, callback){
+            setTimeout(
+                function(){
+                    if (socket.readyState === 1) {
+                        if(callback !== undefined){
+                            callback();
+                        }
+                        return;
+                    } else {
+                        waitForSocketConnection(socket,callback);
+                    }
+                }, 5);
+        };
+        
+        function addRow(val) {
+            const div = document.createElement('div');
+    
+            div.className = 'row';
+    
+            div.innerHTML = `<input class="messaging" type="text" name="message" value="` + val + `"  /> <br/>`;
+    
+            document.getElementById('chat-messages').appendChild(div);
+          
+    }
+        function Send() {
+            
+            var msg = document.getElementById("newMsg").value;
+    
+              
+            console.log(chatContent) 
+            if (msg != '') {
+    
+                   waitForSocketConnection(ws, function() {ws.send(
+                        JSON.stringify({
+                            message: document.getElementById("newMsg").value
+                        }
+                    ))
+                   });
+                    msg = ''; // Reset newMsg
+                }
+
+                
+                
+    }
+    
+    
+    </script>
 </head>
-
 <body>
-<div class="main-div">
-  <h2>Welcome</h2>
-  <form action="/login" method="post">
-    <input name="email" type="email" placeholder="Email..." id="email_field"/>
-    <input name="password" type="password" placeholder="Password..." id="password_field"/>
-      <input type="submit" value="Log In">
-  </form>
-</div>
-<div class="errorEmail">
-  <h3>{{.ErrorMess}}</h3>
-  <br>
-  </br>
-  <br>
-  </br>
-  <form action="/switchtosign" method="post">
-    <button class="btn-signup">If you do not have an account please click here to Sign Up!</button>
-  </form>
-</div>
+    <h1> FSchat </h1>
+    <div class="main">
+        <div class="column left">
+          <h2>Hello {{.Name}}!</h2>
+          <img src="oski.jpg" alt="Oski" width="300" height="200">
+          <p>Click Here to Return to Chat Room Selection..</p>
+          <button class="btn-signup">Sign Out</button>
+        </div>
+        <div class="column right">
+          <h2>Chat Room</h2>
+          <div class="chatbox">
+                <div id="chat-messages" class="card-content">
 
+                </div>
+            </div>
+          <div class="messagebox"></div>
+
+          <input class = "textfield"  id="newMsg" placeholder="Message...">
+            <button class="senderbtn" onclick="Send()">Send</button>
+     
+          <!-- <form action="/sendMessage" method="post">
+            <input name="message" type="message" placeholder="Message..." id="message_field"/>
+              <input type="submit" value="Send">
+          </form> -->
+        </div>
+      </div>
+</body>
+
+<footer>
+        <p>Find me on social media.</p>
+        <p>Powered by <a href="https://www.google.com" target="_blank">Google</a></p>
+      </footer>
 
 </body>
 </html>
