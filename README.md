@@ -12,6 +12,6 @@ Currently fixing small bug with logging out and improving/designing the chatroom
 
 ![chat example 1](https://ibb.co/pQWpNZK)
 
-![chat example 2](https://ibb.co/SdhS4QK)
+![chat example 2](https://i.ibb.co/F0SpLsB/Screen-Shot-2019-08-21-at-9-40-25-PM.png)
 
 
