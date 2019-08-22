@@ -10,8 +10,8 @@ Currently fixing small bug with logging out and improving/designing the chatroom
 
 ![log in](https://i.postimg.cc/02d86mZY/Screen-Shot-2019-08-18-at-4-21-54-PM.png)
 
-![chat example 1](https://ibb.co/pQWpNZK)
+![chat example 1](https://i.postimg.cc/6p1RMCS2/Screen-Shot-2019-08-21-at-9-40-06-PM.png)
 
-![chat example 2](https://i.postimg.cc/6p1RMCS2/Screen-Shot-2019-08-21-at-9-40-06-PM.png)
+![chat example 2](https://i.postimg.cc/MpXffvTW/Screen-Shot-2019-08-21-at-9-40-25-PM.png)
 
 
