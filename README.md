@@ -4,7 +4,7 @@ Here is screen shots of what I can share so far!
 
 Group chat functionality is full optimal
 
-Currently fixing small bug with logging out and improving/designing the chatroom selection and overall page
+Currently fixing small bug with logging out that correctly logs out with the cookie and the chat socket connection and improving/designing the chatroom selection and overall page
 
 ![sign up](https://i.postimg.cc/L6M96vk4/Screen-Shot-2019-08-18-at-4-21-46-PM.png)
 
